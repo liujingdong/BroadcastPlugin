@@ -1,0 +1,21 @@
+{
+  "name": "crazy-dong-plugin-idata-scan-key-down",
+  "version": "1.0.0",
+  "description": "scan_qr",
+  "cordova": {
+	"id":"org.cordova.BroadcastPlugin",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liujingdong/BroadcastPlugin.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "liujingdong",
+  "license": "ISC"
+}
