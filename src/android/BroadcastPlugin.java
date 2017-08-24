@@ -18,6 +18,8 @@ public class BroadcastPlugin extends CordovaPlugin{
   private BroadcastReceiver scanReceiver;
   private static final String RES_ACTION = "android.intent.action.SCANRESULT";//iData
   private static final String YAN_HUA = "df.scanservice.result";//研华
+  private static final String FSK = "scannerdata";//富士康
+  private static final String FSK_ACTION  = "com.android.server.scannerservice.broadcast";//富士康
   private CallbackContext mCallbackContext;
 
   @Override
@@ -33,17 +35,29 @@ public class BroadcastPlugin extends CordovaPlugin{
      }
 
     //研华插件
-        if(action.equals("yanHua")){
-          mCallbackContext = callbackContext;
-          Intent sendIntent = new Intent("df.scanservice.toapp");
-          cordova.getActivity().sendBroadcast(sendIntent);
+    if(action.equals("yanHua")){
+      mCallbackContext = callbackContext;
+      Intent sendIntent = new Intent("df.scanservice.toapp");
+      cordova.getActivity().sendBroadcast(sendIntent);
 
-          intentFilter = new IntentFilter();
-          intentFilter.addAction(YAN_HUA);
-          scanReceiver = new ScannerResultReceiver();
-          cordova.getActivity().registerReceiver(scanReceiver,intentFilter);
-          return true;
-        }
+      intentFilter = new IntentFilter();
+      intentFilter.addAction(YAN_HUA);
+      scanReceiver = new ScannerResultReceiver();
+      cordova.getActivity().registerReceiver(scanReceiver,intentFilter);
+      return true;
+    }
+
+    //富士康插件
+    if(action.equals("FSK")){
+      mCallbackContext = callbackContext;
+      Intent fskSendIntent = new Intent(FSK_ACTION);
+      cordova.getActivity().sendBroadcast(fskSendIntent);
+
+      intentFilter = new IntentFilter(FSK_ACTION);
+      scanReceiver = new ScannerResultReceiver();
+      cordova.getActivity().registerReceiver(scanReceiver,intentFilter);
+      return true;
+    }
 
     return false;
   }
@@ -66,6 +80,14 @@ public class BroadcastPlugin extends CordovaPlugin{
         String YanhuaScanResult = intent.getStringExtra("result");
         YanhuaScanResult.trim();
         mCallbackContext.success(YanhuaScanResult);
+      }
+
+      //富士康
+      if(intent.getAction().equalsIgnoreCase(FSK_ACTION)){
+        /*获取扫描的结果*/
+        String FSKScanResult = intent.getStringExtra(FSK);
+        FSKScanResult.trim();
+        mCallbackContext.success(FSKScanResult);
       }
 
 
