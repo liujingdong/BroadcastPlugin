@@ -16,11 +16,14 @@ import org.json.JSONException;
 public class BroadcastPlugin extends CordovaPlugin{
   private IntentFilter intentFilter;
   private BroadcastReceiver scanReceiver;
-  private static final String RES_ACTION = "android.intent.action.SCANRESULT";
+  private static final String RES_ACTION = "android.intent.action.SCANRESULT";//iData
+  private static final String YAN_HUA = "df.scanservice.result";//研华
   private CallbackContext mCallbackContext;
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+
+    //iData插件
      if(action.equals("Broadcast")){
        mCallbackContext = callbackContext;
        intentFilter = new IntentFilter(RES_ACTION);
@@ -28,6 +31,19 @@ public class BroadcastPlugin extends CordovaPlugin{
        cordova.getActivity().registerReceiver(scanReceiver,intentFilter);
        return true;
      }
+
+    //研华插件
+        if(action.equals("yanHua")){
+          mCallbackContext = callbackContext;
+          Intent sendIntent = new Intent("df.scanservice.toapp");
+          cordova.getActivity().sendBroadcast(sendIntent);
+
+          intentFilter = new IntentFilter();
+          intentFilter.addAction(YAN_HUA);
+          scanReceiver = new ScannerResultReceiver();
+          cordova.getActivity().registerReceiver(scanReceiver,intentFilter);
+          return true;
+        }
 
     return false;
   }
@@ -37,11 +53,25 @@ public class BroadcastPlugin extends CordovaPlugin{
 
     @Override
     public void onReceive(Context context, Intent intent) {
+      //iData
       if(intent.getAction().equals(RES_ACTION)){
         /*获取扫描的结果*/
         String scanResult = intent.getStringExtra("value");
         mCallbackContext.success(scanResult);
       }
+
+      //研华
+      if(intent.getAction().equalsIgnoreCase(YAN_HUA)){
+        /*获取扫描的结果*/
+        String YanhuaScanResult = intent.getStringExtra("result");
+        YanhuaScanResult.trim();
+        mCallbackContext.success(YanhuaScanResult);
+      }
+
+
+
+      cordova.getActivity().unregisterReceiver(scanReceiver);
+
     }
   }
 
