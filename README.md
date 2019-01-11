@@ -6,6 +6,6 @@ Supported Platforms: android
 deleting:
 BroadcastPlugin.broadcast("Broadcast",success,err);
 success:成功回调方法,返回二维码值
-error:失败回调方法
+error:失败回调的方法
 ---
 
